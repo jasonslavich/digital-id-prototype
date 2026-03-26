@@ -577,18 +577,24 @@
       <div class="accent-bar"></div>
 
       <div class="front-body">
-        <!-- Subscriber Name + Subscriber ID / Plan Type + Group ID -->
-        <div class="fields-grid" style="gap:4px 14px;">
-          <div class="field-block">
-            <div class="field-label">Subscriber Name</div>
-            <div class="field-value large" id="disp-name">Jane M. Doe</div>
-            <div class="field-label" style="margin-top:5px;">Plan Type</div>
-            <div class="plan-badge" id="disp-planType" style="margin-top:2px;">PPO – Gold 80</div>
-          </div>
+        <!-- Subscriber Name (full width) -->
+        <div>
+          <div class="field-label">Subscriber Name</div>
+          <div class="field-value large" id="disp-name">Jane M. Doe</div>
+        </div>
+
+        <!-- Subscriber ID | Plan Type | Group ID -->
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px 14px;">
           <div class="field-block">
             <div class="field-label">Subscriber ID</div>
             <div class="field-value large" id="disp-subscriberId">BSC123456789</div>
-            <div class="field-label" style="margin-top:5px;">Group ID</div>
+          </div>
+          <div class="field-block">
+            <div class="field-label">Plan Type</div>
+            <div class="plan-badge" id="disp-planType" style="margin-top:2px;">PPO – Gold 80</div>
+          </div>
+          <div class="field-block">
+            <div class="field-label">Group ID</div>
             <div class="field-value" id="disp-groupId">123456</div>
           </div>
         </div>
@@ -643,29 +649,55 @@
       <div class="back-accent"></div>
 
       <div class="back-body">
-        <!-- Backer section -->
-        <div class="section-title">Claims & Provider Information</div>
-        <div class="backer-section">
-          <div class="fields-grid" style="gap:5px 14px;">
-            <div class="field-block">
-              <div class="field-label">Claims URL</div>
-              <div class="field-value" style="font-size:10px;" id="disp-backerUrl">providers.blueshieldca.com</div>
+        <!-- Two-column: Member | Providers -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;flex:1;">
+
+          <!-- LEFT: Member -->
+          <div style="padding-right:9px;border-right:1px solid #d0e3f0;">
+            <div class="section-title" style="margin-bottom:4px;">Member</div>
+            <div style="display:flex;flex-direction:column;gap:3px;">
+              <div class="field-block">
+                <div class="field-label">Customer Service</div>
+                <div class="field-value" style="font-size:9.5px;" id="disp-phone">1-800-393-6130</div>
+              </div>
+              <div class="field-block">
+                <div class="field-label">TTY</div>
+                <div class="field-value" style="font-size:9.5px;" id="disp-tty">1-800-241-1823</div>
+              </div>
+              <div class="field-block">
+                <div class="field-label">Mental Health Service</div>
+                <div class="field-value" style="font-size:9.5px;" id="disp-mentalHealth">1-877-263-9952</div>
+              </div>
+              <div class="field-block">
+                <div class="field-label">Pharmacy Help Desk</div>
+                <div class="field-value" style="font-size:9.5px;" id="disp-pharmacyHelp">1-800-535-9700</div>
+              </div>
             </div>
-            <div class="field-block">
-              <div class="field-label">Backer Phone</div>
-              <div class="field-value" style="font-size:10px;" id="disp-backerPhone">1-800-541-6652</div>
+            <p style="font-size:7.5px;color:var(--bsc-dark);line-height:1.4;margin-top:6px;font-style:italic;">Use preferred physicians and hospitals to receive maximum benefits.</p>
+          </div>
+
+          <!-- RIGHT: Providers -->
+          <div style="padding-left:9px;">
+            <div class="section-title" style="margin-bottom:4px;">Providers</div>
+            <div class="field-block" style="margin-bottom:4px;">
+              <div class="field-label">Provider Services</div>
+              <div class="field-value" style="font-size:9.5px;" id="disp-providerPhone">1-800-541-6652</div>
             </div>
+            <p style="font-size:7px;color:var(--bsc-dark);line-height:1.4;font-style:italic;">Please file all claims with your local BCBS licensee in whose service area the member received services or, when Medicare is primary, file all claims with Medicare. For more information visit: <span style="color:var(--bsc-blue);font-style:normal;">blueshieldca.com/provider</span></p>
           </div>
-          <div class="backer-instructions" id="disp-backerInstructions">
-            Submit claims electronically to Blue Shield of California. Include member ID and group number on all claims. For prior authorization, contact provider services before rendering non-emergency care.
-          </div>
+        </div>
+
+        <!-- Bottom section: claims addresses + disclaimer -->
+        <div style="border-top:1px solid #d0e3f0;margin-top:7px;padding-top:6px;display:flex;flex-direction:column;gap:3px;">
+          <p style="font-size:7px;color:var(--bsc-dark);line-height:1.4;"><strong style="color:var(--bsc-navy);">CA Medical claims to:</strong> Blue Shield of California, P.O. Box 272540, Chico, CA</p>
+          <p style="font-size:7px;color:var(--bsc-dark);line-height:1.4;"><strong style="color:var(--bsc-navy);">Pediatric Dental claims to:</strong> Claims Processing, P.O. Box 30567, Salt Lake City, UT 84130-0567</p>
+          <p style="font-size:6.5px;color:var(--bsc-gray);line-height:1.35;font-style:italic;">Blue Shield of California provides administrative services only and does not assume any financial risk or obligation with respect to claims.</p>
         </div>
       </div>
 
       <div class="back-footer">
         <div class="footer-info">
-          <div class="field-label">Member Services</div>
-          <div class="field-value" id="disp-phone2">1-800-393-6130</div>
+          <div class="field-value" style="font-size:9px;color:var(--bsc-gray);" id="disp-url2">blueshieldca.com</div>
         </div>
         <span class="flip-hint" onclick="flipCard()">
           <span class="flip-icon">↩</span> Flip to front
@@ -720,15 +752,6 @@
         <input type="text" id="inp-groupId" value="123456" />
       </div>
 
-      <div class="form-group">
-        <label>Customer Service Phone</label>
-        <input type="text" id="inp-phone" value="1-800-393-6130" />
-      </div>
-      <div class="form-group">
-        <label>Website URL</label>
-        <input type="text" id="inp-url" value="blueshieldca.com" />
-      </div>
-
       <!-- RX -->
       <div class="form-group">
         <label>RX Group</label>
@@ -743,18 +766,30 @@
         <input type="text" id="inp-rxPcn" value="MEDDADV" />
       </div>
 
-      <!-- Backer -->
+      <!-- Back of card: Member phones -->
       <div class="form-group">
-        <label>Backer URL</label>
-        <input type="text" id="inp-backerUrl" value="providers.blueshieldca.com" />
+        <label>Customer Service Phone</label>
+        <input type="text" id="inp-phone" value="1-800-393-6130" />
       </div>
       <div class="form-group">
-        <label>Backer Phone</label>
-        <input type="text" id="inp-backerPhone" value="1-800-541-6652" />
+        <label>TTY</label>
+        <input type="text" id="inp-tty" value="1-800-241-1823" />
       </div>
-      <div class="form-group full">
-        <label>Backer Instructions</label>
-        <textarea id="inp-backerInstructions">Submit claims electronically to Blue Shield of California. Include member ID and group number on all claims. For prior authorization, contact provider services before rendering non-emergency care.</textarea>
+      <div class="form-group">
+        <label>Mental Health Service</label>
+        <input type="text" id="inp-mentalHealth" value="1-877-263-9952" />
+      </div>
+      <div class="form-group">
+        <label>Pharmacy Help Desk</label>
+        <input type="text" id="inp-pharmacyHelp" value="1-800-535-9700" />
+      </div>
+      <div class="form-group">
+        <label>Provider Services Phone</label>
+        <input type="text" id="inp-providerPhone" value="1-800-541-6652" />
+      </div>
+      <div class="form-group">
+        <label>Website URL</label>
+        <input type="text" id="inp-url" value="blueshieldca.com" />
       </div>
 
       <!-- Logo upload -->
@@ -801,7 +836,7 @@
 
   // ── Save ──
   function saveCard() {
-    const fields = ['name','subscriberId','groupId','planType','groupNumber','phone','url','rxGroup','rxBin','rxPcn','backerUrl','backerPhone','backerInstructions'];
+    const fields = ['name','subscriberId','groupId','planType','groupNumber','phone','tty','mentalHealth','pharmacyHelp','providerPhone','url','rxGroup','rxBin','rxPcn'];
     fields.forEach(f => {
       const el = document.getElementById(`inp-${f}`);
       if (el) sync(f, el.value);

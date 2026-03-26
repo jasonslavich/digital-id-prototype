@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Blue Shield of California – Digital ID Card</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@300;400;600;700&family=Source+Serif+4:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet" />
+  <style>
+    /* ── Blue Shield Brand Palette ── */
+    :root {
+      --bsc-navy:    #003087;
+      --bsc-blue:    #005EB8;
+      --bsc-mid:     #1A7FC1;
+      --bsc-light:   #E8F2FA;
+      --bsc-accent:  #00A3E0;
+      --bsc-gold:    #F5A623;
+      --bsc-white:   #FFFFFF;
+      --bsc-gray:    #6B7280;
+      --bsc-dark:    #1C2B3A;
+      --card-radius: 18px;
+      --shadow:      0 24px 64px rgba(0,48,135,.22), 0 4px 16px rgba(0,48,135,.12);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Source Sans 3', sans-serif;
+      background: linear-gradient(160deg, #dbe9f7 0%, #eaf3fb 40%, #c9dff2 100%);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 32px 16px 48px;
+      gap: 32px;
+    }
+
+    /* ── Page header ── */
+    .page-title {
+      text-align: center;
+      color: var(--bsc-navy);
+      font-size: clamp(13px, 2vw, 15px);
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      font-weight: 600;
+      opacity: .7;
+    }
+
+    /* ── Card wrapper ── */
+    .card-scene {
+      perspective: 1400px;
+      width: min(520px, 100%);
+    }
+
+    .card-flipper {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 85.6 / 54;  /* standard CR80 ratio */
+      transform-style: preserve-3d;
+      transition: transform .7s cubic-bezier(.4,0,.2,1);
+    }
+    .card-scene.flipped .card-flipper { transform: rotateY(180deg); }
+
+    .card-face {
+      position: absolute; inset: 0;
+      border-radius: var(--card-radius);
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+
+    /* ════════════════════════════════
+       FRONT FACE
+    ════════════════════════════════ */
+    .card-front {
+      background: var(--bsc-white);
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* top stripe */
+    .front-header {
+      background: linear-gradient(135deg, var(--bsc-navy) 0%, var(--bsc-blue) 60%, var(--bsc-mid) 100%);
+      padding: 14px 18px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .bsc-logo-wrap {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+    }
+
+    /* SVG shield mark */
+    .shield-mark {
+      width: 34px;
+      height: 38px;
+      flex-shrink: 0;
+    }
+
+    .bsc-wordmark {
+      display: flex;
+      flex-direction: column;
+      line-height: 1;
+    }
+    .bsc-wordmark .line1 {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--bsc-white);
+      letter-spacing: .01em;
+    }
+    .bsc-wordmark .line2 {
+      font-size: 10px;
+      font-weight: 400;
+      color: rgba(255,255,255,.78);
+      letter-spacing: .04em;
+    }
+
+    /* group logo placeholder */
+    .group-logo-wrap {
+      background: rgba(255,255,255,.15);
+      border: 1.5px solid rgba(255,255,255,.35);
+      border-radius: 8px;
+      padding: 5px 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 60px;
+      min-height: 30px;
+      backdrop-filter: blur(4px);
+    }
+    .group-logo-wrap img {
+      max-height: 26px;
+      max-width: 80px;
+      object-fit: contain;
+    }
+    .group-logo-wrap .logo-placeholder {
+      font-size: 9px;
+      color: rgba(255,255,255,.6);
+      text-align: center;
+      letter-spacing: .03em;
+      font-style: italic;
+    }
+
+    /* accent bar */
+    .accent-bar {
+      height: 4px;
+      background: linear-gradient(90deg, var(--bsc-gold) 0%, var(--bsc-accent) 100%);
+    }
+
+    /* card body */
+    .front-body {
+      flex: 1;
+      padding: 13px 18px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    /* member row */
+    .member-row {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+    }
+    .field-label {
+      font-size: 8.5px;
+      font-weight: 700;
+      color: var(--bsc-navy);
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .field-value {
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--bsc-dark);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .field-value.large {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--bsc-navy);
+    }
+
+    /* grid of fields */
+    .fields-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px 14px;
+    }
+    .field-block { display: flex; flex-direction: column; gap: 1px; }
+
+    /* plan badge */
+    .plan-badge {
+      display: inline-flex;
+      align-items: center;
+      background: var(--bsc-light);
+      border: 1px solid var(--bsc-accent);
+      border-radius: 20px;
+      padding: 2px 10px;
+      font-size: 10.5px;
+      font-weight: 700;
+      color: var(--bsc-blue);
+      letter-spacing: .04em;
+      align-self: flex-start;
+    }
+
+    /* divider */
+    .divider {
+      height: 1px;
+      background: linear-gradient(90deg, var(--bsc-light), #b8d4ec 50%, var(--bsc-light));
+    }
+
+    /* footer row */
+    .front-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 18px 12px;
+      flex-shrink: 0;
+    }
+    .footer-info { display: flex; flex-direction: column; gap: 2px; }
+    .footer-info .field-label { color: var(--bsc-gray); }
+    .footer-info .field-value { font-size: 11px; font-weight: 600; color: var(--bsc-navy); }
+
+    .flip-hint {
+      font-size: 9px;
+      color: var(--bsc-gray);
+      letter-spacing: .04em;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      opacity: .75;
+      cursor: pointer;
+      user-select: none;
+      transition: opacity .2s;
+    }
+    .flip-hint:hover { opacity: 1; }
+    .flip-icon { font-size: 13px; }
+
+    /* ════════════════════════════════
+       BACK FACE
+    ════════════════════════════════ */
+    .card-back {
+      background: var(--bsc-white);
+      transform: rotateY(180deg);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .back-header {
+      background: linear-gradient(135deg, var(--bsc-navy) 0%, var(--bsc-blue) 100%);
+      padding: 11px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .back-header .bsc-wordmark .line1 { font-size: 12px; }
+    .back-header .bsc-wordmark .line2 { font-size: 9px; }
+
+    .back-accent { height: 4px; background: linear-gradient(90deg, var(--bsc-gold), var(--bsc-accent)); }
+
+    .back-body {
+      flex: 1;
+      padding: 12px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .section-title {
+      font-size: 9px;
+      font-weight: 700;
+      color: var(--bsc-blue);
+      text-transform: uppercase;
+      letter-spacing: .1em;
+      border-bottom: 1.5px solid var(--bsc-light);
+      padding-bottom: 3px;
+      margin-bottom: 1px;
+    }
+
+    .rx-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+    }
+
+    .backer-section {
+      background: var(--bsc-light);
+      border-radius: 10px;
+      padding: 9px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .backer-instructions {
+      font-size: 8.5px;
+      color: var(--bsc-dark);
+      line-height: 1.45;
+      font-family: 'Source Serif 4', serif;
+      font-style: italic;
+    }
+
+    .back-footer {
+      padding: 8px 18px 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+      border-top: 1px solid var(--bsc-light);
+    }
+    .back-footer .flip-hint { font-size: 9px; }
+
+    /* ── Flip button (below card) ── */
+    .flip-btn {
+      background: var(--bsc-navy);
+      color: var(--bsc-white);
+      border: none;
+      border-radius: 50px;
+      padding: 11px 28px;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: .04em;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 6px 20px rgba(0,48,135,.25);
+      transition: background .2s, transform .15s, box-shadow .2s;
+    }
+    .flip-btn:hover {
+      background: var(--bsc-blue);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 28px rgba(0,48,135,.32);
+    }
+    .flip-btn:active { transform: translateY(0); }
+
+    /* ── Edit modal ── */
+    .modal-overlay {
+      position: fixed; inset: 0;
+      background: rgba(0,20,60,.45);
+      backdrop-filter: blur(5px);
+      display: flex; align-items: center; justify-content: center;
+      padding: 16px;
+      z-index: 100;
+      opacity: 0; pointer-events: none;
+      transition: opacity .25s;
+    }
+    .modal-overlay.open { opacity: 1; pointer-events: all; }
+
+    .modal {
+      background: var(--bsc-white);
+      border-radius: 16px;
+      padding: 28px 28px 24px;
+      width: min(480px, 100%);
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 32px 80px rgba(0,20,60,.3);
+      transform: translateY(16px);
+      transition: transform .25s;
+    }
+    .modal-overlay.open .modal { transform: translateY(0); }
+
+    .modal h2 {
+      font-size: 18px;
+      color: var(--bsc-navy);
+      font-weight: 700;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .modal-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px 16px;
+    }
+    .modal-grid .full { grid-column: 1 / -1; }
+
+    .form-group { display: flex; flex-direction: column; gap: 5px; }
+    .form-group label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--bsc-navy);
+      text-transform: uppercase;
+      letter-spacing: .06em;
+    }
+    .form-group input, .form-group textarea {
+      font-family: inherit;
+      font-size: 13px;
+      border: 1.5px solid #c8d9ed;
+      border-radius: 8px;
+      padding: 8px 10px;
+      color: var(--bsc-dark);
+      outline: none;
+      transition: border-color .2s;
+      background: #f7fbff;
+    }
+    .form-group input:focus, .form-group textarea:focus {
+      border-color: var(--bsc-blue);
+      background: #fff;
+    }
+    .form-group textarea { resize: vertical; min-height: 68px; }
+
+    .modal-actions {
+      margin-top: 20px;
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+    .btn-secondary {
+      background: var(--bsc-light);
+      color: var(--bsc-navy);
+      border: none;
+      border-radius: 8px;
+      padding: 9px 20px;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .btn-primary {
+      background: var(--bsc-navy);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 9px 22px;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .btn-primary:hover { background: var(--bsc-blue); }
+
+    .edit-btn {
+      background: rgba(255,255,255,.92);
+      color: var(--bsc-navy);
+      border: 1.5px solid #b8d4ec;
+      border-radius: 50px;
+      padding: 9px 22px;
+      font-family: inherit;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: background .2s, box-shadow .2s;
+      box-shadow: 0 2px 8px rgba(0,48,135,.1);
+    }
+    .edit-btn:hover {
+      background: #fff;
+      box-shadow: 0 4px 14px rgba(0,48,135,.18);
+    }
+
+    .btn-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    /* logo upload */
+    .logo-upload-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .logo-upload-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--bsc-navy);
+      text-transform: uppercase;
+      letter-spacing: .06em;
+    }
+    .logo-upload-area {
+      border: 2px dashed #b8d4ec;
+      border-radius: 10px;
+      padding: 14px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color .2s, background .2s;
+      background: #f7fbff;
+      position: relative;
+    }
+    .logo-upload-area:hover { border-color: var(--bsc-blue); background: #edf5fc; }
+    .logo-upload-area input[type=file] {
+      position: absolute; inset: 0; opacity: 0; cursor: pointer;
+    }
+    .logo-preview {
+      max-height: 40px;
+      max-width: 140px;
+      object-fit: contain;
+      display: none;
+    }
+    .logo-upload-text {
+      font-size: 12px;
+      color: var(--bsc-gray);
+    }
+
+    @media (max-width: 420px) {
+      .modal-grid { grid-template-columns: 1fr; }
+      .modal-grid .full { grid-column: 1; }
+    }
+  </style>
+</head>
+<body>
+
+<p class="page-title">Digital Insurance ID Card</p>
+
+<!-- ── Card ── -->
+<div class="card-scene" id="cardScene">
+  <div class="card-flipper" id="cardFlipper">
+
+    <!-- FRONT -->
+    <div class="card-face card-front">
+      <div class="front-header">
+        <div class="bsc-logo-wrap">
+          <!-- SVG shield mark (Blue Shield wordmark) -->
+          <svg class="shield-mark" viewBox="0 0 34 38" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M17 1L2 7.5V20C2 28.5 8.5 34.5 17 37C25.5 34.5 32 28.5 32 20V7.5L17 1Z" fill="white" fill-opacity="0.18"/>
+            <path d="M17 1L2 7.5V20C2 28.5 8.5 34.5 17 37C25.5 34.5 32 28.5 32 20V7.5L17 1Z" stroke="white" stroke-width="1.5"/>
+            <path d="M10 19.5L14.5 24L24 14" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <div class="bsc-wordmark">
+            <span class="line1">Blue Shield</span>
+            <span class="line2">of California</span>
+          </div>
+        </div>
+        <div class="group-logo-wrap" id="groupLogoWrap">
+          <img id="groupLogoImg" src="" alt="Group Logo" style="display:none;" />
+          <span class="logo-placeholder" id="logoPlaceholder">Group<br>Logo</span>
+        </div>
+      </div>
+
+      <div class="accent-bar"></div>
+
+      <div class="front-body">
+        <!-- Member name -->
+        <div>
+          <div class="field-label">Subscriber Name</div>
+          <div class="field-value large" id="disp-name">Jane M. Doe</div>
+        </div>
+
+        <!-- Plan badge -->
+        <div>
+          <div class="field-label">Plan Type</div>
+          <div class="plan-badge" id="disp-planType">PPO – Gold 80</div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Group & RX -->
+        <div class="fields-grid">
+          <div class="field-block">
+            <div class="field-label">Group Number</div>
+            <div class="field-value" id="disp-groupNumber">123456</div>
+          </div>
+          <div class="field-block">
+            <div class="field-label">RX Group</div>
+            <div class="field-value" id="disp-rxGroup">RX78901</div>
+          </div>
+          <div class="field-block">
+            <div class="field-label">RX BIN</div>
+            <div class="field-value" id="disp-rxBin">610591</div>
+          </div>
+          <div class="field-block">
+            <div class="field-label">RX PCN</div>
+            <div class="field-value" id="disp-rxPcn">MEDDADV</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="front-footer">
+        <div class="footer-info">
+          <div class="field-label">Customer Service</div>
+          <div class="field-value" id="disp-phone">1-800-393-6130</div>
+          <div class="field-value" style="font-size:9px;color:var(--bsc-gray);" id="disp-url">blueshieldca.com</div>
+        </div>
+        <span class="flip-hint" onclick="flipCard()">
+          <span class="flip-icon">↩</span> Flip for more
+        </span>
+      </div>
+    </div>
+
+    <!-- BACK -->
+    <div class="card-face card-back">
+      <div class="back-header">
+        <div class="bsc-logo-wrap">
+          <svg class="shield-mark" width="28" height="32" viewBox="0 0 34 38" fill="none">
+            <path d="M17 1L2 7.5V20C2 28.5 8.5 34.5 17 37C25.5 34.5 32 28.5 32 20V7.5L17 1Z" fill="white" fill-opacity="0.18"/>
+            <path d="M17 1L2 7.5V20C2 28.5 8.5 34.5 17 37C25.5 34.5 32 28.5 32 20V7.5L17 1Z" stroke="white" stroke-width="1.5"/>
+            <path d="M10 19.5L14.5 24L24 14" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <div class="bsc-wordmark">
+            <span class="line1">Blue Shield of California</span>
+            <span class="line2">Health Plan Member</span>
+          </div>
+        </div>
+      </div>
+      <div class="back-accent"></div>
+
+      <div class="back-body">
+        <!-- RX section -->
+        <div class="section-title">Pharmacy (Rx) Information</div>
+        <div class="rx-grid">
+          <div class="field-block">
+            <div class="field-label">RX Group</div>
+            <div class="field-value" id="disp-rxGroup2">RX78901</div>
+          </div>
+          <div class="field-block">
+            <div class="field-label">BIN</div>
+            <div class="field-value" id="disp-rxBin2">610591</div>
+          </div>
+          <div class="field-block">
+            <div class="field-label">PCN</div>
+            <div class="field-value" id="disp-rxPcn2">MEDDADV</div>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+
+        <!-- Backer section -->
+        <div class="section-title">Claims & Provider Information</div>
+        <div class="backer-section">
+          <div class="fields-grid" style="gap:5px 14px;">
+            <div class="field-block">
+              <div class="field-label">Claims URL</div>
+              <div class="field-value" style="font-size:10px;" id="disp-backerUrl">providers.blueshieldca.com</div>
+            </div>
+            <div class="field-block">
+              <div class="field-label">Backer Phone</div>
+              <div class="field-value" style="font-size:10px;" id="disp-backerPhone">1-800-541-6652</div>
+            </div>
+          </div>
+          <div class="backer-instructions" id="disp-backerInstructions">
+            Submit claims electronically to Blue Shield of California. Include member ID and group number on all claims. For prior authorization, contact provider services before rendering non-emergency care.
+          </div>
+        </div>
+      </div>
+
+      <div class="back-footer">
+        <div class="footer-info">
+          <div class="field-label">Member Services</div>
+          <div class="field-value" id="disp-phone2">1-800-393-6130</div>
+        </div>
+        <span class="flip-hint" onclick="flipCard()">
+          <span class="flip-icon">↩</span> Flip to front
+        </span>
+      </div>
+    </div>
+
+  </div><!-- /flipper -->
+</div><!-- /scene -->
+
+<!-- Action buttons -->
+<div class="btn-row">
+  <button class="flip-btn" onclick="flipCard()">
+    <span>↩</span> Flip Card
+  </button>
+  <button class="edit-btn" onclick="openModal()">
+    ✏️ Edit Card Info
+  </button>
+</div>
+
+<!-- ── Edit Modal ── -->
+<div class="modal-overlay" id="modalOverlay" onclick="handleOverlayClick(event)">
+  <div class="modal" id="modal">
+    <h2>🛡️ Edit Card Information</h2>
+
+    <div class="modal-grid">
+      <div class="form-group full">
+        <label>Subscriber Name</label>
+        <input type="text" id="inp-name" value="Jane M. Doe" />
+      </div>
+
+      <div class="form-group">
+        <label>Plan Type</label>
+        <input type="text" id="inp-planType" value="PPO – Gold 80" />
+      </div>
+      <div class="form-group">
+        <label>Group Number</label>
+        <input type="text" id="inp-groupNumber" value="123456" />
+      </div>
+
+      <div class="form-group">
+        <label>Customer Service Phone</label>
+        <input type="text" id="inp-phone" value="1-800-393-6130" />
+      </div>
+      <div class="form-group">
+        <label>Website URL</label>
+        <input type="text" id="inp-url" value="blueshieldca.com" />
+      </div>
+
+      <!-- RX -->
+      <div class="form-group">
+        <label>RX Group</label>
+        <input type="text" id="inp-rxGroup" value="RX78901" />
+      </div>
+      <div class="form-group">
+        <label>RX BIN</label>
+        <input type="text" id="inp-rxBin" value="610591" />
+      </div>
+      <div class="form-group">
+        <label>RX PCN</label>
+        <input type="text" id="inp-rxPcn" value="MEDDADV" />
+      </div>
+
+      <!-- Backer -->
+      <div class="form-group">
+        <label>Backer URL</label>
+        <input type="text" id="inp-backerUrl" value="providers.blueshieldca.com" />
+      </div>
+      <div class="form-group">
+        <label>Backer Phone</label>
+        <input type="text" id="inp-backerPhone" value="1-800-541-6652" />
+      </div>
+      <div class="form-group full">
+        <label>Backer Instructions</label>
+        <textarea id="inp-backerInstructions">Submit claims electronically to Blue Shield of California. Include member ID and group number on all claims. For prior authorization, contact provider services before rendering non-emergency care.</textarea>
+      </div>
+
+      <!-- Logo upload -->
+      <div class="form-group full logo-upload-wrap">
+        <label class="logo-upload-label">Group Logo (optional)</label>
+        <div class="logo-upload-area">
+          <input type="file" accept="image/*" id="logoFileInput" onchange="handleLogoUpload(event)" />
+          <img id="logoPreviewModal" class="logo-preview" alt="Logo preview" />
+          <p class="logo-upload-text" id="logoUploadText">Click or drag to upload your group logo</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closeModal()">Cancel</button>
+      <button class="btn-primary" onclick="saveCard()">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ── State ──
+  let logoDataUrl = null;
+
+  // ── Sync fields helper ──
+  function sync(id, value) {
+    document.querySelectorAll(`[id^="disp-${id}"]`).forEach(el => el.textContent = value);
+  }
+
+  // ── Logo upload ──
+  function handleLogoUpload(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = ev => {
+      logoDataUrl = ev.target.result;
+      const prev = document.getElementById('logoPreviewModal');
+      prev.src = logoDataUrl;
+      prev.style.display = 'block';
+      document.getElementById('logoUploadText').style.display = 'none';
+    };
+    reader.readAsDataURL(file);
+  }
+
+  // ── Save ──
+  function saveCard() {
+    const fields = ['name','planType','groupNumber','phone','url','rxGroup','rxBin','rxPcn','backerUrl','backerPhone','backerInstructions'];
+    fields.forEach(f => {
+      const el = document.getElementById(`inp-${f}`);
+      if (el) sync(f, el.value);
+    });
+
+    // handle logo
+    if (logoDataUrl) {
+      const img = document.getElementById('groupLogoImg');
+      img.src = logoDataUrl;
+      img.style.display = 'block';
+      document.getElementById('logoPlaceholder').style.display = 'none';
+    }
+
+    closeModal();
+  }
+
+  // ── Flip ──
+  function flipCard() {
+    document.getElementById('cardScene').classList.toggle('flipped');
+  }
+
+  // ── Modal ──
+  function openModal() { document.getElementById('modalOverlay').classList.add('open'); }
+  function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); }
+  function handleOverlayClick(e) {
+    if (e.target === document.getElementById('modalOverlay')) closeModal();
+  }
+
+  // keyboard close
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+</script>
+</body>
+</html>

@@ -549,10 +549,16 @@
       <div class="accent-bar"></div>
 
       <div class="front-body">
-        <!-- Member name -->
-        <div>
-          <div class="field-label">Subscriber Name</div>
-          <div class="field-value large" id="disp-name">Jane M. Doe</div>
+        <!-- Member name + Subscriber ID -->
+        <div class="fields-grid" style="gap:4px 14px;">
+          <div class="field-block">
+            <div class="field-label">Subscriber Name</div>
+            <div class="field-value large" id="disp-name">Jane M. Doe</div>
+          </div>
+          <div class="field-block">
+            <div class="field-label">Subscriber ID</div>
+            <div class="field-value large" id="disp-subscriberId">BSC123456789</div>
+          </div>
         </div>
 
         <!-- Plan badge -->
@@ -682,9 +688,13 @@
     <h2>🛡️ Edit Card Information</h2>
 
     <div class="modal-grid">
-      <div class="form-group full">
+      <div class="form-group">
         <label>Subscriber Name</label>
         <input type="text" id="inp-name" value="Jane M. Doe" />
+      </div>
+      <div class="form-group">
+        <label>Subscriber ID</label>
+        <input type="text" id="inp-subscriberId" value="BSC123456789" />
       </div>
 
       <div class="form-group">
@@ -777,7 +787,7 @@
 
   // ── Save ──
   function saveCard() {
-    const fields = ['name','planType','groupNumber','phone','url','rxGroup','rxBin','rxPcn','backerUrl','backerPhone','backerInstructions'];
+    const fields = ['name','subscriberId','planType','groupNumber','phone','url','rxGroup','rxBin','rxPcn','backerUrl','backerPhone','backerInstructions'];
     fields.forEach(f => {
       const el = document.getElementById(`inp-${f}`);
       if (el) sync(f, el.value);

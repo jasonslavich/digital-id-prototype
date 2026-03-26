@@ -515,6 +515,34 @@
       .modal-grid { grid-template-columns: 1fr; }
       .modal-grid .full { grid-column: 1; }
     }
+    @media print {
+      body {
+        background: white !important;
+        padding: 0;
+        margin: 0;
+        display: block;
+      }
+      .page-title, .btn-row, .modal-overlay { display: none !important; }
+      .card-scene {
+        perspective: none;
+        width: 3.375in;
+        page-break-inside: avoid;
+        margin: 0.5in auto;
+      }
+      .card-flipper {
+        transform: none !important;
+        position: relative;
+        height: auto;
+        aspect-ratio: 85.6 / 54;
+      }
+      .card-face { box-shadow: none; border: 1px solid #ccc; }
+      .card-back { display: none !important; }
+      .card-front {
+        position: relative !important;
+        backface-visibility: visible !important;
+        -webkit-backface-visibility: visible !important;
+      }
+    }
   </style>
 </head>
 <body>
@@ -549,32 +577,27 @@
       <div class="accent-bar"></div>
 
       <div class="front-body">
-        <!-- Member name + Subscriber ID -->
+        <!-- Subscriber Name + Subscriber ID / Plan Type + Group ID -->
         <div class="fields-grid" style="gap:4px 14px;">
           <div class="field-block">
             <div class="field-label">Subscriber Name</div>
             <div class="field-value large" id="disp-name">Jane M. Doe</div>
+            <div class="field-label" style="margin-top:5px;">Plan Type</div>
+            <div class="plan-badge" id="disp-planType" style="margin-top:2px;">PPO – Gold 80</div>
           </div>
           <div class="field-block">
             <div class="field-label">Subscriber ID</div>
             <div class="field-value large" id="disp-subscriberId">BSC123456789</div>
+            <div class="field-label" style="margin-top:5px;">Group ID</div>
+            <div class="field-value" id="disp-groupId">123456</div>
           </div>
-        </div>
-
-        <!-- Plan badge -->
-        <div>
-          <div class="field-label">Plan Type</div>
-          <div class="plan-badge" id="disp-planType">PPO – Gold 80</div>
         </div>
 
         <div class="divider"></div>
 
-        <!-- Group & RX -->
-        <div class="fields-grid">
-          <div class="field-block">
-            <div class="field-label">Group Number</div>
-            <div class="field-value" id="disp-groupNumber">123456</div>
-          </div>
+        <!-- RX Section -->
+        <div class="section-title" style="font-size:8px;margin-bottom:2px;">Pharmacy (Rx) Information</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px 14px;">
           <div class="field-block">
             <div class="field-label">RX Group</div>
             <div class="field-value" id="disp-rxGroup">RX78901</div>
@@ -620,25 +643,6 @@
       <div class="back-accent"></div>
 
       <div class="back-body">
-        <!-- RX section -->
-        <div class="section-title">Pharmacy (Rx) Information</div>
-        <div class="rx-grid">
-          <div class="field-block">
-            <div class="field-label">RX Group</div>
-            <div class="field-value" id="disp-rxGroup2">RX78901</div>
-          </div>
-          <div class="field-block">
-            <div class="field-label">BIN</div>
-            <div class="field-value" id="disp-rxBin2">610591</div>
-          </div>
-          <div class="field-block">
-            <div class="field-label">PCN</div>
-            <div class="field-value" id="disp-rxPcn2">MEDDADV</div>
-          </div>
-        </div>
-
-        <div class="divider"></div>
-
         <!-- Backer section -->
         <div class="section-title">Claims & Provider Information</div>
         <div class="backer-section">
@@ -680,6 +684,12 @@
   <button class="edit-btn" onclick="openModal()">
     ✏️ Edit Card Info
   </button>
+  <button class="edit-btn" onclick="printCard()">
+    🖨️ Print
+  </button>
+  <button class="edit-btn" onclick="downloadCard()">
+    ⬇️ Download
+  </button>
 </div>
 
 <!-- ── Edit Modal ── -->
@@ -704,6 +714,10 @@
       <div class="form-group">
         <label>Group Number</label>
         <input type="text" id="inp-groupNumber" value="123456" />
+      </div>
+      <div class="form-group">
+        <label>Group ID</label>
+        <input type="text" id="inp-groupId" value="123456" />
       </div>
 
       <div class="form-group">
@@ -787,7 +801,7 @@
 
   // ── Save ──
   function saveCard() {
-    const fields = ['name','subscriberId','planType','groupNumber','phone','url','rxGroup','rxBin','rxPcn','backerUrl','backerPhone','backerInstructions'];
+    const fields = ['name','subscriberId','groupId','planType','groupNumber','phone','url','rxGroup','rxBin','rxPcn','backerUrl','backerPhone','backerInstructions'];
     fields.forEach(f => {
       const el = document.getElementById(`inp-${f}`);
       if (el) sync(f, el.value);
@@ -818,6 +832,48 @@
 
   // keyboard close
   document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+  // ── Print ──
+  function printCard() {
+    // Temporarily reset flip so front shows
+    const scene = document.getElementById('cardScene');
+    const wasFlipped = scene.classList.contains('flipped');
+    scene.classList.remove('flipped');
+    setTimeout(() => {
+      window.print();
+      if (wasFlipped) scene.classList.add('flipped');
+    }, 100);
+  }
+
+  // ── Download (PNG via canvas) ──
+  async function downloadCard() {
+    const scene = document.getElementById('cardScene');
+    const wasFlipped = scene.classList.contains('flipped');
+    scene.classList.remove('flipped');
+
+    await new Promise(r => setTimeout(r, 150));
+
+    const front = document.querySelector('.card-front');
+    const rect = front.getBoundingClientRect();
+    const scale = 3;
+
+    // Use html2canvas if available, else fallback to print
+    if (typeof html2canvas !== 'undefined') {
+      html2canvas(front, { scale, useCORS: true, backgroundColor: '#ffffff' }).then(canvas => {
+        const link = document.createElement('a');
+        link.download = 'blueshield-id-card.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+        if (wasFlipped) scene.classList.add('flipped');
+      });
+    } else {
+      // Dynamically load html2canvas then retry
+      const script = document.createElement('script');
+      script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+      script.onload = () => downloadCard();
+      document.head.appendChild(script);
+    }
+  }
 </script>
 </body>
 </html>
